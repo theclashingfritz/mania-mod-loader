@@ -344,10 +344,40 @@ void ResumeSound()
 }
 
 VoidFunc(sub_5BC1C0, 0x5BC1C0);
-void PauseSound()
-{
+void PauseSound() {
 	BASS_ChannelPause(basschan);
 	sub_5BC1C0();
+}
+
+void *debugSpawnMotobugObject() {
+	return spawnObject(MotobugObjectP->objectID, 0, GeneralData->playerObjectMem->x, GeneralData->playerObjectMem->y);
+}
+
+void debugSetMotobugObjectSprite() {
+    setObjectSprite(MotobugObjectP->spriteIndex, 0, &DebugModeObjectP->debugSpawnArray[512], 1, 0);
+    debugObjectChangeState(&DebugModeObjectP->debugSpawnArray[512], 0, 0);
+}
+
+void __cdecl MotobugObjectSetup() {
+	_WORD spriteIndex;
+	int count;
+
+	if ( checkStageName("GHZ") == 1 ) {
+		spriteIndex = loadBin("GHZ/Motobug.bin", 2);
+	} else if ( checkStageName("Blueprint") == 1 ) {
+		spriteIndex = loadBin("Blueprint/Motobug.bin", 2);
+	}
+	MotobugObjectP->spriteIndex = spriteIndex;
+	MotobugObjectP->word4 = -14;
+	MotobugObjectP->word6 = -14;
+	MotobugObjectP->word8 = 14;
+	MotobugObjectP->wordA = 14;
+	count = DebugModeObjectP->debugObjectSpawnArrayCount;
+	if ( count < 256 ) {
+		DebugModeObjectP->debugObjectIDArray[count + 1] = MotobugObjectP->objectID;
+		DebugModeObjectP->debugSpawnArray[DebugModeObjectP->debugObjectSpawnArrayCount + 256] = debugSpawnMotobugObject;
+		DebugModeObjectP->debugSpawnArray[DebugModeObjectP->debugObjectSpawnArrayCount++] = debugSetMotobugObjectSprite;
+	}
 }
 
 // Code Parser.
